@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🥚 Jeu des Œufs de Pâques</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 25%, #e8d5f2 50%, #c5e1f5 75%, #d4f1d4 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+
+        /* PAGE 1 - FORMULAIRE */
+        #page1 {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        #page2 {
+            display: none;
+        }
+
+        .page1-hidden { display: none !important; }
+        .page2-visible { display: block !important; animation: fadeIn 0.5s ease-in; }
+
+        h1 {
+            color: #d4598f;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #888;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        input[type="tel"] {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: #d4598f;
+            box-shadow: 0 0 0 3px rgba(212, 89, 143, 0.1);
+        }
+
+        .error {
+            color: #e74c3c;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #btnSubmit {
+            background: linear-gradient(135deg, #d4598f, #e8798f);
+            color: white;
+            margin-top: 20px;
+        }
+
+        #btnSubmit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(212, 89, 143, 0.4);
+        }
+
+        #btnSubmit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* PAGE 2 - ŒUFS */
+        .page2-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .phone-display {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .balance-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .balance-label {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .balance-amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #27ae60;
+            animation: balancePulse 0.5s ease-out;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #555;
+            margin-top: 10px;
+        }
+
+        .consultation-message {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 10px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .consultation-mode .consultation-message {
+            display: block;
+        }
+
+        .instruction-text {
+            text-align: center;
+            font-size: 18px;
+            color: #d4598f;
+            margin-bottom: 25px;
+            font-weight: 600;
+            animation: instructionGlow 2s infinite;
+        }
+
+        .consultation-mode .instruction-text {
+            display: none;
+        }
+
+        .eggs-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .egg {
+            width: 150px;
+            height: 180px;
+            border-radius: 50% / 55% 55% 45% 45%;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+            background: radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.6), transparent 50%),
+                        linear-gradient(135deg, #ffc0d9 0%, #ff9ace 100%);
+            box-shadow: inset -3px -3px 8px rgba(0, 0, 0, 0.15), 
+                        0 15px 35px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .egg::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 20%;
+            width: 40%;
+            height: 30%;
+            background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.8), transparent 70%);
+            border-radius: 50%;
+            filter: blur(8px);
+            z-index: 1;
+        }
+
+        .egg-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        /* Variations d'œufs */
+        #egg1 {
+            background: radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.6), transparent 50%),
+                        linear-gradient(135deg, #ffc0d9 0%, #ffb3cc 50%, #ff9ace 100%);
+            clip-path: polygon(50% 0%, 80% 15%, 95% 35%, 95% 65%, 80% 85%, 50% 100%, 20% 85%, 5% 65%, 5% 35%, 20% 15%);
+        }
+
+        #egg1::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.2) 10px, rgba(255, 255, 255, 0.2) 12px);
+            border-radius: 50% / 55% 55% 45% 45%;
+        }
+
+        #egg2 {
+            background: radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.6), transparent 50%),
+                        linear-gradient(135deg, #b3e5fc 0%, #81d4fa 50%, #4fc3f7 100%);
+        }
+
+        #egg2::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.3) 3px, transparent 3px),
+                        radial-gradient(circle at 60% 40%, rgba(255, 255, 255, 0.3) 2px, transparent 2px),
+                        radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.3) 2px, transparent 2px);
+            background-size: 30px 30px;
+            border-radius: 50% / 55% 55% 45% 45%;
+        }
+
+        .egg:hover:not(.disabled) {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: inset -3px -3px 8px rgba(0, 0, 0, 0.15), 
+                        0 20px 45px rgba(0, 0, 0, 0.3);
+        }
+
+        .egg.disabled {
+            opacity: 0.6;
+            filter: grayscale(0.2);
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+        .egg.cracked {
+            animation: eggCrack 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        .gain-badge {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 15px;
+            border-radius: 10px;
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            animation: gainBounce 0.5s ease-out;
+        }
+
+        /* Bouton Réclamation */
+        .reclamation-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        #btnReclamer {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            padding: 14px 24px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        #btnReclamer:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(243, 156, 18, 0.4);
+        }
+
+        .countdown {
+            color: #e67e22;
+            font-weight: bold;
+            font-size: 14px;
+            display: none;
+        }
+
+        .countdown.active {
+            display: block;
+        }
+
+        /* Boutons action */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #btnRetrait, #btnLogout {
+            flex: 1;
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        #btnRetrait {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+        }
+
+        #btnLogout {
+            background: #95a5a6;
+            color: white;
+        }
+
+        /* Loader */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loader-overlay.active {
+            display: flex;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #d4598f;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+
+        .toast {
+            background: white;
+            padding: 16px 24px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease-out;
+            border-left: 4px solid;
+        }
+
+        .toast.success {
+            border-left-color: #27ae60;
+            color: #27ae60;
+        }
+
+        .toast.error {
+            border-left-color: #e74c3c;
+            color: #e74c3c;
+        }
+
+        .toast.info {
+            border-left-color: #3498db;
+            color: #3498db;
+        }
+
+        .toast.warning {
+            border-left-color: #f39c12;
+            color: #f39c12;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes eggCrack {
+            0% {
+                transform: scale(1) rotate(0deg);
+            }
+            50% {
+                transform: scale(0.95) rotate(-2deg);
+            }
+            100% {
+                transform: scale(0.9) rotate(2deg);
+                filter: brightness(1.2);
+            }
+        }
+
+        @keyframes gainBounce {
+            0% {
+                transform: scale(0) translateY(20px);
+                opacity: 0;
+            }
+            70% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes instructionGlow {
+            0%, 100% {
+                opacity: 1;
+                text-shadow: 0 0 0 rgba(212, 89, 143, 0.3);
+            }
+            50% {
+                opacity: 0.8;
+                text-shadow: 0 0 15px rgba(212, 89, 143, 0.5);
+            }
+        }
+
+        @keyframes balancePulse {
+            0% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            .egg {
+                width: 120px;
+                height: 145px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .instruction-text {
+                font-size: 14px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader-overlay" id="loaderOverlay">
+        <div class="loader"></div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="container">
+        <!-- PAGE 1: FORMULAIRE D'INSCRIPTION -->
+        <div id="page1">
+            <h1>🥚 Jeu des Œufs de Pâques</h1>
+            <p class="subtitle">Inscrivez-vous pour jouer et gagner jusqu'à 2920F</p>
+
+            <div class="form-group">
+                <label for="phoneInput">Numéro de téléphone</label>
+                <input 
+                    type="tel" 
+                    id="phoneInput" 
+                    placeholder="Ex: 77123456 ou 0712345678" 
+                    maxlength="10"
+                    autocomplete="tel"
+                >
+                <div class="error" id="phoneError"></div>
+            </div>
+
+            <button id="btnSubmit">Valider et continuer</button>
+        </div>
+
+        <!-- PAGE 2: JEU ET SOLDE -->
+        <div id="page2">
+            <div class="page2-header">
+                <h1>🥚 Vos Gains</h1>
+                <div class="phone-display" id="phoneDisplay"></div>
+            </div>
+
+            <div class="consultation-message" id="consultationMsg">
+                🔒 Mode consultation - Vous avez déjà utilisé vos deux chances. Vous pouvez consulter votre solde et faire un retrait.
+            </div>
+
+            <div class="balance-section">
+                <div class="balance-label">Solde actuel</div>
+                <div class="balance-amount" id="balanceDisplay">0F</div>
+                <div class="status-badge" id="statusBadge">🥚 Chances restantes: 2</div>
+            </div>
+
+            <div class="instruction-text">🥚 Cliquez sur les œufs pour jouer et gagner jusqu'à 1460F ! 🥚</div>
+
+            <div class="eggs-container">
+                <div class="egg" id="egg1">
+                    <div class="egg-content">
+                        <span id="egg1Text">🥚</span>
+                    </div>
+                </div>
+                <div class="egg" id="egg2">
+                    <div class="egg-content">
+                        <span id="egg2Text">🥚</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reclamation-section">
+                <button id="btnReclamer">💳 PAYER 100F POUR RÉCLAMER</button>
+                <div class="countdown" id="countdown"></div>
+            </div>
+
+            <div class="action-buttons">
+                <button id="btnRetrait">💰 RETRAIT</button>
+                <button id="btnLogout">🚪 DÉCONNEXION</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== VARIABLES GLOBALES ====================
+        let gameState = {
+            phone: '',
+            encryptedPhone: '',
+            balance: 0,
+            egg1Clicked: false,
+            egg2Clicked: false,
+            egg1Gain: 0,
+            egg2Gain: 0,
+            reclamationDone: false,
+            countdownInterval: null,
+            consultationMode: false
+        };
+
+        // ==================== STOCKAGE LOCAL ====================
+        function encryptPhone(phone) {
+            return btoa(phone);
+        }
+
+        function decryptPhone(encrypted) {
+            return atob(encrypted);
+        }
+
+        function saveToLocalStorage() {
+            const data = {
+                phone: gameState.phone,
+                encryptedPhone: gameState.encryptedPhone,
+                balance: gameState.balance,
+                egg1Clicked: gameState.egg1Clicked,
+                egg2Clicked: gameState.egg2Clicked,
+                egg1Gain: gameState.egg1Gain,
+                egg2Gain: gameState.egg2Gain,
+                reclamationDone: gameState.reclamationDone,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem(`player_${gameState.encryptedPhone}`, JSON.stringify(data));
+        }
+
+        function loadFromLocalStorage(encryptedPhone) {
+            const data = localStorage.getItem(`player_${encryptedPhone}`);
+            return data ? JSON.parse(data) : null;
+        }
+
+        function checkPhoneExists(encryptedPhone) {
+            return localStorage.getItem(`player_${encryptedPhone}`) !== null;
+        }
+
+        // ==================== NOTIFICATIONS ====================
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ==================== LOADER ====================
+        function showLoader(duration = 500) {
+            const overlay = document.getElementById('loaderOverlay');
+            overlay.classList.add('active');
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    overlay.classList.remove('active');
+                    resolve();
+                }, duration);
+            });
+        }
+
+        // ==================== PAGE 1: FORMULAIRE ====================
+        document.getElementById('phoneInput').addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+
+        document.getElementById('btnSubmit').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const phone = document.getElementById('phoneInput').value;
+            const errorDiv = document.getElementById('phoneError');
+            errorDiv.textContent = '';
+
+            // Validation
+            if (!phone) {
+                errorDiv.textContent = '⚠️ Le numéro de téléphone est obligatoire';
+                return;
+            }
+
+            if (!/^\d{8}$|^\d{10}$/.test(phone)) {
+                errorDiv.textContent = '⚠️ Le numéro doit contenir 8 ou 10 chiffres';
+                return;
+            }
+
+            // Chiffrer et vérifier existence
+            gameState.phone = phone;
+            gameState.encryptedPhone = encryptPhone(phone);
+
+            const existing = loadFromLocalStorage(gameState.encryptedPhone);
+
+            if (existing) {
+                // Joueur existant
+                gameState.balance = existing.balance;
+                gameState.egg1Clicked = existing.egg1Clicked;
+                gameState.egg2Clicked = existing.egg2Clicked;
+                gameState.egg1Gain = existing.egg1Gain;
+                gameState.egg2Gain = existing.egg2Gain;
+                gameState.reclamationDone = existing.reclamationDone;
+
+                // Vérifier si mode consultation
+                if (existing.egg1Clicked && existing.egg2Clicked) {
+                    gameState.consultationMode = true;
+                }
+            } else {
+                // Nouveau joueur
+                gameState.balance = 0;
+                gameState.egg1Clicked = false;
+                gameState.egg2Clicked = false;
+                gameState.egg1Gain = 0;
+                gameState.egg2Gain = 0;
+                gameState.reclamationDone = false;
+                gameState.consultationMode = false;
+            }
+
+            // Transition avec loader
+            document.getElementById('btnSubmit').disabled = true;
+            await showLoader(500);
+            transitionToPage2();
+        });
+
+        // ==================== TRANSITIONS ====================
+        function transitionToPage2() {
+            document.getElementById('page1').classList.add('page1-hidden');
+            document.getElementById('page2').classList.add('page2-visible');
+            document.getElementById('btnSubmit').disabled = false;
+
+            updatePage2UI();
+            initializeEggs();
+        }
+
+        function transitionToPage1() {
+            document.getElementById('page2').classList.remove('page2-visible');
+            document.getElementById('page1').classList.remove('page1-hidden');
+            document.getElementById('phoneInput').value = '';
+            document.getElementById('phoneError').textContent = '';
+            document.getElementById('phoneInput').focus();
+        }
+
+        // ==================== PAGE 2: INTERFACE ====================
+        function updatePage2UI() {
+            // Afficher téléphone chiffré
+            document.getElementById('phoneDisplay').textContent = `📱 ${gameState.encryptedPhone.substring(0, 8)}...`;
+
+            // Afficher solde
+            document.getElementById('balanceDisplay').textContent = `${gameState.balance}F`;
+
+            // Statut
+            const statusBadge = document.getElementById('statusBadge');
+            if (gameState.consultationMode) {
+                statusBadge.textContent = '🔒 Mode consultation';
+                document.getElementById('page2').classList.add('consultation-mode');
+            } else {
+                const chances = 2 - (gameState.egg1Clicked ? 1 : 0) - (gameState.egg2Clicked ? 1 : 0);
+                statusBadge.textContent = `🥚 Chances restantes: ${chances}`;
+                document.getElementById('page2').classList.remove('consultation-mode');
+            }
+
+            // Bouton réclamation
+            updateReclamationButton();
+        }
+
+        function initializeEggs() {
+            const egg1 = document.getElementById('egg1');
+            const egg2 = document.getElementById('egg2');
+
+            if (gameState.consultationMode) {
+                egg1.classList.add('disabled');
+                egg2.classList.add('disabled');
+            } else {
+                egg1.classList.remove('disabled');
+                egg2.classList.remove('disabled');
+            }
+
+            // Réinitialiser affichage
+            if (gameState.egg1Clicked) {
+                document.getElementById('egg1Text').innerHTML = `<span class="gain-badge">${gameState.egg1Gain}F</span>`;
+            } else {
+                document.getElementById('egg1Text').textContent = '🥚';
+            }
+
+            if (gameState.egg2Clicked) {
+                document.getElementById('egg2Text').innerHTML = `<span class="gain-badge">${gameState.egg2Gain}F</span>`;
+            } else {
+                document.getElementById('egg2Text').textContent = '🥚';
+            }
+
+            egg1.removeEventListener('click', handleEgg1Click);
+            egg2.removeEventListener('click', handleEgg2Click);
+
+            if (!gameState.consultationMode) {
+                if (!gameState.egg1Clicked) {
+                    egg1.addEventListener('click', handleEgg1Click);
+                }
+                if (!gameState.egg2Clicked) {
+                    egg2.addEventListener('click', handleEgg2Click);
+                }
+            }
+        }
+
+        async function handleEgg1Click(e) {
+            e.stopPropagation();
+            await handleEggClick(1);
+        }
+
+        async function handleEgg2Click(e) {
+            e.stopPropagation();
+            await handleEggClick(2);
+        }
+
+        async function handleEggClick(eggNumber) {
+            await showLoader(500);
+
+            const eggEl = eggNumber === 1 ? document.getElementById('egg1') : document.getElementById('egg2');
+            eggEl.classList.add('cracked');
+
+            const gain = Math.floor(Math.random() * (1460 - 130 + 1)) + 130;
+
+            if (eggNumber === 1) {
+                gameState.egg1Clicked = true;
+                gameState.egg1Gain = gain;
+            } else {
+                gameState.egg2Clicked = true;
+                gameState.egg2Gain = gain;
+            }
+
+            gameState.balance += gain;
+            saveToLocalStorage();
+
+            const eggText = eggNumber === 1 ? document.getElementById('egg1Text') : document.getElementById('egg2Text');
+            eggText.innerHTML = `<span class="gain-badge">${gain}F</span>`;
+
+            showNotification(`🎉 Vous avez gagné ${gain}F !`, 'success');
+
+            // Mettre à jour affichage
+            document.getElementById('balanceDisplay').textContent = `${gameState.balance}F`;
+
+            // Vérifier si 2 œufs cliqués
+            if (gameState.egg1Clicked && gameState.egg2Clicked) {
+                showReclamationButton();
+            }
+
+            updatePage2UI();
+        }
+
+        // ==================== BOUTON RÉCLAMATION ====================
+        function updateReclamationButton() {
+            const btnReclamer = document.getElementById('btnReclamer');
+
+            if (gameState.consultationMode && !gameState.reclamationDone) {
+                btnReclamer.style.display = 'block';
+            } else if (!gameState.consultationMode && gameState.egg1Clicked && gameState.egg2Clicked && !gameState.reclamationDone) {
+                btnReclamer.style.display = 'block';
+            } else {
+                btnReclamer.style.display = 'none';
+            }
+        }
+
+        function showReclamationButton() {
+            document.getElementById('btnReclamer').style.display = 'block';
+            startCountdown(180); // 3 minutes
+        }
+
+        function startCountdown(seconds) {
+            if (gameState.countdownInterval) clearInterval(gameState.countdownInterval);
+
+            const countdownEl = document.getElementById('countdown');
+            countdownEl.classList.add('active');
+
+            let remaining = seconds;
+            countdownEl.textContent = `⏱️ Réclamation valide pour: ${Math.floor(remaining / 60)}m ${remaining % 60}s`;
+
+            gameState.countdownInterval = setInterval(() => {
+                remaining--;
+
+                if (remaining <= 0) {
+                    clearInterval(gameState.countdownInterval);
+                    countdownEl.classList.remove('active');
+                    document.getElementById('btnReclamer').style.display = 'none';
+                    showNotification('⏰ Délai de réclamation expiré', 'warning');
+                } else {
+                    countdownEl.textContent = `⏱️ Réclamation valide pour: ${Math.floor(remaining / 60)}m ${remaining % 60}s`;
+                }
+            }, 1000);
+        }
+
+        document.getElementById('btnReclamer').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await showLoader(500);
+
+            gameState.reclamationDone = true;
+            saveToLocalStorage();
+
+            window.open('https://pay.wave.com/m/M_ci_cipLWOUEEL9u/c/ci/?amount=100', '_blank');
+
+            showNotification(`💳 Paiement de 100F enregistré. Votre gain de ${gameState.egg1Gain + gameState.egg2Gain}F CFA sera traité.`, 'success');
+
+            document.getElementById('btnReclamer').style.display = 'none';
+            clearInterval(gameState.countdownInterval);
+            document.getElementById('countdown').classList.remove('active');
+        });
+
+        // ==================== BOUTON RETRAIT ====================
+        document.getElementById('btnRetrait').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await showLoader(500);
+
+            if (!gameState.reclamationDone) {
+                showNotification('⚠️ Veuillez recharger 100F pour réclamer votre gain avant de pouvoir retirer ! ⚠️', 'warning');
+            } else {
+                showNotification(`✅ Retrait de ${gameState.balance}F initié. Vous recevrez votre paiement dans 24-48h.`, 'success');
+            }
+        });
+
+        // ==================== DÉCONNEXION ====================
+        document.getElementById('btnLogout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (gameState.countdownInterval) clearInterval(gameState.countdownInterval);
+            await showLoader(500);
+            gameState = {
+                phone: '',
+                encryptedPhone: '',
+                balance: 0,
+                egg1Clicked: false,
+                egg2Clicked: false,
+                egg1Gain: 0,
+                egg2Gain: 0,
+                reclamationDone: false,
+                countdownInterval: null,
+                consultationMode: false
+            };
+            transitionToPage1();
+        });
+
+        // Focus input au chargement
+        window.addEventListener('load', () => {
+            document.getElementById('phoneInput').focus();
+        });
+    </script>
+</body>
+</html>
